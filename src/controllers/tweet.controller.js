@@ -5,7 +5,7 @@ import { ApiError } from "../utils/APIError.js";
 import { ApiResponse } from "../utils/APIResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
-// ✅ Create tweet
+
 const createTweet = asyncHandler(async (req, res) => {
   const { content } = req.body;
 
@@ -25,7 +25,7 @@ const createTweet = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, tweet, "Tweet created successfully"));
 });
 
-// ✅ Get tweets of a specific user
+
 const getUserTweets = asyncHandler(async (req, res) => {
   const { userId } = req.params;
   const { page = 1, limit = 10 } = req.query;
@@ -58,7 +58,7 @@ const getUserTweets = asyncHandler(async (req, res) => {
     );
 });
 
-// ✅ NEW — Get ALL tweets (public feed)
+
 const getAllTweets = asyncHandler(async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
 
@@ -81,7 +81,7 @@ const getAllTweets = asyncHandler(async (req, res) => {
     );
 });
 
-// ✅ Update a tweet
+
 const updateTweet = asyncHandler(async (req, res) => {
   const { tweetId } = req.params;
   const { content } = req.body;
@@ -111,7 +111,7 @@ const updateTweet = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, tweet, "Tweet updated successfully"));
 });
 
-// ✅ Delete a tweet
+
 const deleteTweet = asyncHandler(async (req, res) => {
   const { tweetId } = req.params;
 
