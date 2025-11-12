@@ -1,8 +1,8 @@
 import mongoose, { isValidObjectId } from "mongoose";
 import { Tweet } from "../models/tweet.model.js";
 import { User } from "../models/user.model.js";
-import { ApiError } from "../utils/APIError.js";
-import { ApiResponse } from "../utils/APIResponse.js";
+import { APIError } from "../utils/APIError.js";
+import { APIResponse } from "../utils/APIResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 
@@ -10,7 +10,7 @@ const createTweet = asyncHandler(async (req, res) => {
   const { content } = req.body;
 
   if (!content || !content.trim()) {
-    throw new ApiError(400, "Tweet content is required");
+    throw new APIError(400, "Tweet content is required");
   }
 
   const tweet = await Tweet.create({
@@ -22,7 +22,7 @@ const createTweet = asyncHandler(async (req, res) => {
 
   return res
     .status(201)
-    .json(new ApiResponse(201, tweet, "Tweet created successfully"));
+    .json(new APIResponse(201, tweet, "Tweet created successfully"));
 });
 
 
@@ -31,12 +31,12 @@ const getUserTweets = asyncHandler(async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
 
   if (!isValidObjectId(userId)) {
-    throw new ApiError(400, "Invalid user ID");
+    throw new APIError(400, "Invalid user ID");
   }
 
   const userExists = await User.findById(userId);
   if (!userExists) {
-    throw new ApiError(404, "User not found");
+    throw new APIError(404, "User not found");
   }
 
   const tweets = await Tweet.find({ owner: userId })
@@ -50,7 +50,7 @@ const getUserTweets = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(
+      new APIResponse(
         200,
         { total, page: parseInt(page), limit: parseInt(limit), tweets },
         "User tweets fetched successfully"
@@ -73,7 +73,7 @@ const getAllTweets = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(
+      new APIResponse(
         200,
         { total, page: parseInt(page), limit: parseInt(limit), tweets },
         "Tweets fetched successfully"
@@ -87,20 +87,20 @@ const updateTweet = asyncHandler(async (req, res) => {
   const { content } = req.body;
 
   if (!isValidObjectId(tweetId)) {
-    throw new ApiError(400, "Invalid tweet ID");
+    throw new APIError(400, "Invalid tweet ID");
   }
 
   if (!content || !content.trim()) {
-    throw new ApiError(400, "Updated content is required");
+    throw new APIError(400, "Updated content is required");
   }
 
   const tweet = await Tweet.findById(tweetId);
   if (!tweet) {
-    throw new ApiError(404, "Tweet not found");
+    throw new APIError(404, "Tweet not found");
   }
 
   if (tweet.owner.toString() !== req.user?._id.toString()) {
-    throw new ApiError(403, "You are not authorized to update this tweet");
+    throw new APIError(403, "You are not authorized to update this tweet");
   }
 
   tweet.content = content.trim();
@@ -108,7 +108,7 @@ const updateTweet = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, tweet, "Tweet updated successfully"));
+    .json(new APIResponse(200, tweet, "Tweet updated successfully"));
 });
 
 
@@ -116,23 +116,23 @@ const deleteTweet = asyncHandler(async (req, res) => {
   const { tweetId } = req.params;
 
   if (!isValidObjectId(tweetId)) {
-    throw new ApiError(400, "Invalid tweet ID");
+    throw new APIError(400, "Invalid tweet ID");
   }
 
   const tweet = await Tweet.findById(tweetId);
   if (!tweet) {
-    throw new ApiError(404, "Tweet not found");
+    throw new APIError(404, "Tweet not found");
   }
 
   if (tweet.owner.toString() !== req.user?._id.toString()) {
-    throw new ApiError(403, "You are not authorized to delete this tweet");
+    throw new APIError(403, "You are not authorized to delete this tweet");
   }
 
   await tweet.deleteOne();
 
   return res
     .status(200)
-    .json(new ApiResponse(200, {}, "Tweet deleted successfully"));
+    .json(new APIResponse(200, {}, "Tweet deleted successfully"));
 });
 
 export { createTweet, getUserTweets, updateTweet, deleteTweet, getAllTweets };
