@@ -2,15 +2,15 @@ import mongoose from "mongoose";
 import { Video } from "../models/video.model.js";
 import { Subscription } from "../models/subscription.model.js";
 import { Like } from "../models/like.model.js";
-import { ApiError } from "../utils/APIError.js";
-import { ApiResponse } from "../utils/APIResponse.js";
+import { APIError } from "../utils/APIError.js";
+import { APIResponse } from "../utils/APIResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 const getChannelStats = asyncHandler(async (req, res) => {
   const channelId = req.user?._id;
 
   if (!channelId) {
-    throw new ApiError(401, "Unauthorized");
+    throw new APIError(401, "Unauthorized");
   }
 
   const totalVideos = await Video.countDocuments({ owner: channelId });
@@ -64,7 +64,7 @@ const getChannelStats = asyncHandler(async (req, res) => {
   const totalComments = totalCommentsAgg[0]?.totalComments || 0;
 
   return res.status(200).json(
-    new ApiResponse(
+    new APIResponse(
       200,
       {
         totalVideos,
@@ -90,7 +90,7 @@ const getChannelVideos = asyncHandler(async (req, res) => {
   } = req.query;
 
   if (!channelId) {
-    throw new ApiError(401, "Unauthorized");
+    throw new APIError(401, "Unauthorized");
   }
 
   const sortOrder = sortType === "asc" ? 1 : -1;
@@ -104,7 +104,7 @@ const getChannelVideos = asyncHandler(async (req, res) => {
   const total = await Video.countDocuments({ owner: channelId });
 
   return res.status(200).json(
-    new ApiResponse(
+    new APIResponse(
       200,
       {
         total,
