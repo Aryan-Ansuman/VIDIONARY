@@ -1,24 +1,24 @@
 import mongoose, { isValidObjectId } from "mongoose"
 import { User } from "../models/user.model.js"
 import { Subscription } from "../models/subscription.model.js"
-import { ApiError } from "../utils/ApiError.js"
-import { ApiResponse } from "../utils/ApiResponse.js"
+import { APIError } from "../utils/APIError.js"
+import { APIResponse } from "../utils/APIResponse.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
 
 const toggleSubscription = asyncHandler(async (req, res) => {
     const { channelId } = req.params
 
     if (!isValidObjectId(channelId)) {
-        throw new ApiError(400, "Invalid channel ID")
+        throw new APIError(400, "Invalid channel ID")
     }
 
     if (req.user?._id.toString() === channelId.toString()) {
-        throw new ApiError(400, "You cannot subscribe to yourself")
+        throw new APIError(400, "You cannot subscribe to yourself")
     }
 
     const channel = await User.findById(channelId)
     if (!channel) {
-        throw new ApiError(404, "Channel not found")
+        throw new APIError(404, "Channel not found")
     }
 
 
@@ -44,7 +44,7 @@ const toggleSubscription = asyncHandler(async (req, res) => {
     const subscribersCount = await Subscription.countDocuments({ channel: channelId })
 
     return res.status(200).json(
-        new ApiResponse(
+        new APIResponse(
             200,
             { isSubscribed, subscribersCount },
             isSubscribed ? "Subscribed successfully" : "Unsubscribed successfully"
@@ -57,13 +57,13 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10 } = req.query
 
     if (!isValidObjectId(channelId)) {
-        throw new ApiError(400, "Invalid channel ID")
+        throw new APIError(400, "Invalid channel ID")
     }
 
     
     const channel = await User.findById(channelId)
     if (!channel) {
-        throw new ApiError(404, "Channel not found")
+        throw new APIError(404, "Channel not found")
     }
 
     const subscribers = await Subscription.find({ channel: channelId })
@@ -75,7 +75,7 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
     const total = await Subscription.countDocuments({ channel: channelId })
 
     return res.status(200).json(
-        new ApiResponse(
+        new APIResponse(
             200,
             {
                 total,
@@ -93,13 +93,13 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10 } = req.query
 
     if (!isValidObjectId(subscriberId)) {
-        throw new ApiError(400, "Invalid subscriber ID")
+        throw new APIError(400, "Invalid subscriber ID")
     }
 
 
     const user = await User.findById(subscriberId)
     if (!user) {
-        throw new ApiError(404, "Subscriber not found")
+        throw new APIError(404, "Subscriber not found")
     }
 
     const subscriptions = await Subscription.find({ subscriber: subscriberId })
@@ -111,7 +111,7 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
     const total = await Subscription.countDocuments({ subscriber: subscriberId })
 
     return res.status(200).json(
-        new ApiResponse(
+        new APIResponse(
             200,
             {
                 total,
